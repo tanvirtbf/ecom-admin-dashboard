@@ -1,8 +1,27 @@
-import { Button, Card, Checkbox, Flex, Form, Input, Layout, Space } from "antd";
+import { Alert, Button, Card, Checkbox, Flex, Form, Input, Layout, Space } from "antd";
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
+import { useMutation } from "@tanstack/react-query";
+import type { Credentials } from "../../type";
+import { login } from "../../http/api";
 
+const loginUser = async (credentials: Credentials) => {
+  // server call
+  const { data } = await login(credentials);
+  console.log(data);
+  return data;
+};
 const LoginPage = () => {
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationKey: ["login"], // ai key mainly cache er jonno use hoy . 'login' key word ta diye internally kono ek vabe chaching perform kore
+
+    mutationFn: loginUser, // ai function e server call hobe
+
+    onSuccess: async () => {
+      console.log("User Login Successfully!");
+    }, // jokhon loginUser function success , mane holo server response success pacche tokhon ai function call hobe
+  });
+
   return (
     <>
       <Layout
@@ -28,7 +47,16 @@ const LoginPage = () => {
             }
             style={{ width: 300 }}
           >
-            <Form initialValues={{ remember: true }}>
+            <Form
+              initialValues={{ remember: true }}
+              onFinish={(values) => {
+                mutate({
+                  email: values.username,
+                  password: values.password,
+                });
+                console.log(values);
+              }}
+            >
               <Form.Item
                 name={"username"}
                 rules={[
@@ -58,11 +86,15 @@ const LoginPage = () => {
                   Forgot Password
                 </a>
               </Flex>
+              {
+                isError && (<Alert type="error" message={error.message} />)
+              }
               <Form.Item>
                 <Button
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
+                  loading={isPending}
                 >
                   Login
                 </Button>
