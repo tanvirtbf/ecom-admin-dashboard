@@ -54,7 +54,12 @@ const LoginPage = () => {
             style={{ width: 300 }}
           >
             <Form>
-              <Form.Item name={"username"}>
+              <Form.Item name={"username"} rules={([
+                {
+                  required: true,
+                  message: 'username is not declare'
+                }
+              ])}>
                 <Input prefix={<UserOutlined />} placeholder="Username" />
               </Form.Item>
               <Form.Item name={"password"}>
