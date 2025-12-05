@@ -4,20 +4,22 @@ import Logo from "../../components/icons/Logo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Credentials } from "../../type";
 import { login, self } from "../../http/api";
+import { useAuthStore } from "../../store";
 
 const loginUser = async (credentials: Credentials) => {
   // server call
   const { data } = await login(credentials);
-  console.log(data);
   return data;
 };
 
 const getSelf = async () => {
   const { data } = await self()
-  console.log(data)
+  return data
 }
 
 const LoginPage = () => {
+
+  const { setUser } = useAuthStore();
 
   const { data: selfData , refetch} = useQuery({
     queryKey: ['self'],
@@ -31,7 +33,9 @@ const LoginPage = () => {
     mutationFn: loginUser, // ai function e server call hobe
 
     onSuccess: async () => {
-      refetch()
+      const selfDataPromise = await refetch();
+      setUser(selfDataPromise.data)
+      console.log(selfDataPromise.data)
       console.log("User Login Successfully!");
     }, // jokhon loginUser function success , mane holo server response success pacche tokhon ai function call hobe
   });
