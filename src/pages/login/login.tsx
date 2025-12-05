@@ -1,9 +1,9 @@
 import { Alert, Button, Card, Checkbox, Flex, Form, Input, Layout, Space } from "antd";
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Credentials } from "../../type";
-import { login } from "../../http/api";
+import { login, self } from "../../http/api";
 
 const loginUser = async (credentials: Credentials) => {
   // server call
@@ -11,13 +11,27 @@ const loginUser = async (credentials: Credentials) => {
   console.log(data);
   return data;
 };
+
+const getSelf = async () => {
+  const { data } = await self()
+  console.log(data)
+}
+
 const LoginPage = () => {
+
+  const { data: selfData , refetch} = useQuery({
+    queryKey: ['self'],
+    queryFn: getSelf,
+    enabled: false,
+  })
+
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"], // ai key mainly cache er jonno use hoy . 'login' key word ta diye internally kono ek vabe chaching perform kore
 
     mutationFn: loginUser, // ai function e server call hobe
 
     onSuccess: async () => {
+      refetch()
       console.log("User Login Successfully!");
     }, // jokhon loginUser function success , mane holo server response success pacche tokhon ai function call hobe
   });
