@@ -24,11 +24,19 @@ const LoginPage = () => {
 
   const { setUser, logout: logoutFromStore } = useAuthStore();
 
-  const { data , refetch} = useQuery({
+  const { refetch} = useQuery({
     queryKey: ['self'],
     queryFn: getSelf,
     enabled: false,
   }) // data hocche ai end point getSelf jei data return kore sei data and refetch holo jodi again kothau ai api call korte chai tahole use hoy .
+
+  const { mutate: logoutMutate } = useMutation({
+    mutationKey: ['logout'],
+    mutationFn: logout,
+    onSuccess: async () => {
+      logoutFromStore();
+    }
+  })
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"], // ai key mainly cache er jonno use hoy . 'login' key word ta diye internally kono ek vabe chaching perform kore
@@ -37,14 +45,13 @@ const LoginPage = () => {
 
     onSuccess: async () => {
       const selfDataPromise = await refetch();
+      
+      if(!isAllowed(selfDataPromise.data)) {
+        logoutMutate();
+        return 
+      }
       setUser(selfDataPromise.data)
 
-      if(!isAllowed(selfDataPromise.data)) {
-        await logout();
-        logoutFromStore();
-      }
-
-      console.log(selfDataPromise.data)
       console.log("User Login Successfully!");
     }, // jokhon loginUser function success , mane holo server response success pacche tokhon ai function call hobe
   });
