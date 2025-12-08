@@ -1,5 +1,5 @@
 
-function HmoePage() {
+function HomePage() {
 
   return (
     <div>
@@ -8,4 +8,4 @@ function HmoePage() {
   )
 }
 
-export default HmoePage
+export default HomePage

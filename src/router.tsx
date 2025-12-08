@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import HmoePage from "./pages/HomePage";
+import HomePage from "./pages/HomePage";
 import Categories from "./pages/Categories";
 import LoginPage from "./pages/login/login";
 import Dashboard from "./layouts/Dashboard";
@@ -12,7 +12,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <HmoePage />,
+        element: <HomePage />,
       },
       {
         path: "/categories",
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
     element: <NonAuth />,
     children: [
       {
-        path: "/login",
+        path: "login",
         element: <LoginPage />,
       },
     ],
