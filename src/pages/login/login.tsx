@@ -3,8 +3,9 @@ import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Credentials } from "../../type";
-import { login, self } from "../../http/api";
+import { login, logout, self } from "../../http/api";
 import { useAuthStore } from "../../store";
+import { usePermission } from "../../hooks/usePermission";
 
 const loginUser = async (credentials: Credentials) => {
   // server call
@@ -19,13 +20,15 @@ const getSelf = async () => {
 
 const LoginPage = () => {
 
-  const { setUser } = useAuthStore();
+  const { isAllowed } = usePermission()
 
-  const { data: selfData , refetch} = useQuery({
+  const { setUser, logout: logoutFromStore } = useAuthStore();
+
+  const { data , refetch} = useQuery({
     queryKey: ['self'],
     queryFn: getSelf,
     enabled: false,
-  })
+  }) // data hocche ai end point getSelf jei data return kore sei data and refetch holo jodi again kothau ai api call korte chai tahole use hoy .
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"], // ai key mainly cache er jonno use hoy . 'login' key word ta diye internally kono ek vabe chaching perform kore
@@ -35,6 +38,12 @@ const LoginPage = () => {
     onSuccess: async () => {
       const selfDataPromise = await refetch();
       setUser(selfDataPromise.data)
+
+      if(!isAllowed(selfDataPromise.data)) {
+        await logout();
+        logoutFromStore();
+      }
+
       console.log(selfDataPromise.data)
       console.log("User Login Successfully!");
     }, // jokhon loginUser function success , mane holo server response success pacche tokhon ai function call hobe
@@ -72,7 +81,6 @@ const LoginPage = () => {
                   email: values.username,
                   password: values.password,
                 });
-                console.log(values);
               }}
             >
               <Form.Item
