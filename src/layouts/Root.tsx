@@ -11,17 +11,17 @@ const getSelf = async () => {
 }
 
 const Root = () => {
-    const { setUser } = useAuthStore()
+  const { setUser } = useAuthStore()
   const { data, isLoading } = useQuery({
     queryKey: ["self"],
-    queryFn: getSelf,
+    queryFn: getSelf, // এই function call fail হলে retry হবে
     retry: (failurCount: number, error) => {
         if(error instanceof AxiosError && error.response?.status===401) {
             return false
         }
         return failurCount < 3
-    }
-  });
+    } // Retry মানে হলো যদি কোন API call fail হয়, তাহলে সেই same API call আবার করা।
+  }); 
 
   useEffect(() => {
     if(data) {

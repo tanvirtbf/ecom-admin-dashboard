@@ -1,19 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import type { AuthState } from "./type";
 
-export interface User {
-  id: number;
-  firstName: string;
-  lastNameq: string;
-  email: string;
-  role: string;
-}
-
-interface AuthState {
-  user: null | User;
-  setUser: (user: User) => void;
-  logout: () => void;
-}
 
 export const useAuthStore = create<AuthState>()(
   devtools((set) => ({

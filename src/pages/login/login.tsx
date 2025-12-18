@@ -24,11 +24,11 @@ const LoginPage = () => {
 
   const { setUser, logout: logoutFromStore } = useAuthStore();
 
-  const { refetch} = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['self'],
     queryFn: getSelf,
     enabled: false,
-  }) // data hocche ai end point getSelf jei data return kore sei data and refetch holo jodi again kothau ai api call korte chai tahole use hoy .
+  }) // data hocche ai end point getSelf jei data return kore sei data and enabled false thakle api call tokhono hoy na just sob kichu ready kore refetch er moddhe diye den and refetch function onno kothau conditionally call kora hoy . etaii self api call .
 
   const { mutate: logoutMutate } = useMutation({
     mutationKey: ['logout'],
